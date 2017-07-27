@@ -162,6 +162,8 @@ var geolocation = {
         timers[id] = geolocation.getCurrentPosition(successCallback, errorCallback, options);
 
         var fail = function(e) {
+            if (timers[id].cleared) return;
+
             clearTimeout(timers[id].timer);
             var err = new PositionError(e.code, e.message);
             if (errorCallback) {
@@ -170,6 +172,8 @@ var geolocation = {
         };
 
         var win = function(p) {
+            if (timers[id].cleared) return;
+
             clearTimeout(timers[id].timer);
             if (options.timeout !== Infinity) {
                 timers[id].timer = createTimeout(fail, options.timeout);
@@ -203,6 +207,7 @@ var geolocation = {
         if (id && timers[id] !== undefined) {
             clearTimeout(timers[id].timer);
             timers[id].timer = false;
+            timers[id].cleared = true;
             exec(null, null, "Geolocation", "clearWatch", [id]);
         }
     }
