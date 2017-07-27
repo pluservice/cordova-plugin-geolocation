@@ -20,6 +20,10 @@
 -->
 # Release Notes
 
+### 2.2.1 (Jul 27, 2017)
+* `watchPosition` callbacks are always asynchronous
+* Assure `watchPosition` callbacks are not called if watch was previously cleared
+
 ### 2.2.0 (Apr 15, 2016)
 * Replace `PermissionHelper.java` with `cordova-plugin-compat`
 * CB-10691 Check the context to avoid null errors
