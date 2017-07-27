@@ -67,8 +67,6 @@ function createTimeout(errorCallback, timeout) {
     return t;
 }
 
-function wrap
-
 var geolocation = {
     lastPosition:null, // reference to last known (cached) position returned
     /**
