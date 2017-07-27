@@ -67,6 +67,8 @@ function createTimeout(errorCallback, timeout) {
     return t;
 }
 
+function wrap
+
 var geolocation = {
     lastPosition:null, // reference to last known (cached) position returned
     /**
@@ -162,10 +164,19 @@ var geolocation = {
         var id = utils.createUUID();
 
         // Tell device to get a position ASAP, and also retrieve a reference to the timeout timer generated in getCurrentPosition
-        timers[id] = geolocation.getCurrentPosition(successCallback, errorCallback, options);
+        timers[id] = geolocation.getCurrentPosition(function (p) {
+            // We do not want our successCallback called if watch was cleared.
+            if (timers[id].cleared) { return; }
+            if (successCallback) { successCallback(p); }
+        }, function (e) {
+            // We do not want our errorCallback called if watch was cleared.
+            if (timers[id].cleared) { return; }
+            if (errorCallback) { errorCallback(e); }
+        }, options);
 
         var fail = function(e) {
-            if (timers[id].cleared) return;
+            // We do not want our errorCallback called if timer was cleared.
+            if (timers[id].cleared) { return; }
 
             clearTimeout(timers[id].timer);
             var err = new PositionError(e.code, e.message);
@@ -175,7 +186,9 @@ var geolocation = {
         };
 
         var win = function(p) {
-            if (timers[id].cleared) return;
+            // We do not want our successCallback called if timer was cleared.
+            // We do not either want to create a timeout.
+            if (timers[id].cleared) { return; }
 
             clearTimeout(timers[id].timer);
             if (options.timeout !== Infinity) {
